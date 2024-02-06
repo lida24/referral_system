@@ -1,0 +1,11 @@
+session:
+  key: CaY5iCkYtN7DqXdiYK1BvmGrQuaSA4Tl4bEk9my0jc0=
+user:
+  email: user@user.com
+  password: user
+database:
+  host: 0.0.0.0
+  port: 5432
+  user: lidia
+  password: qwerty123
+  database: project
