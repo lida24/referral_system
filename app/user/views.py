@@ -87,3 +87,4 @@ class GetRefCodeByEmail(AuthRequiredMixin, View):
         ref_code = await self.store.users.get_ref_code_by_email(self.request.user.email)
         raw_ref_code = AccessTokenSchema().dump(ref_code)
         return json_response(data=raw_ref_code)
+
