@@ -4,7 +4,7 @@ from hashlib import sha256
 from typing import Optional
 
 from sqlalchemy import String, DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.store.database.sqlalchemy_base import db
 
@@ -13,8 +13,8 @@ from app.store.database.sqlalchemy_base import db
 class User:
     id: int
     email: str
-    referral_code: Optional[str] = None
-    password: Optional[str] = None
+    password: str
+    referral_code_id: int | None = None
 
     @staticmethod
     def hash_password(password: str) -> str:
@@ -29,12 +29,21 @@ class User:
 
 
 @dataclass
-class AccessToken:
+class ReferralCode:
     id: int
     token: str
-    user_id: int
     created_at: datetime.datetime
     expiration_date: datetime.datetime
+    user_id: int
+
+
+@dataclass
+class Referral:
+    id: int
+    email: str
+    password: str
+    referral_code_id: int
+    referrer_id: int
 
 
 class UserModel(db):
@@ -43,14 +52,26 @@ class UserModel(db):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(120), unique=True)
     password: Mapped[str] = mapped_column(String(120), nullable=False)
-    referral_code: Mapped[str] = mapped_column(String(120), nullable=True)
+    referral_code_id: Mapped[int] = mapped_column(ForeignKey("referral_codes.id", ondelete="SET NULL"), nullable=True)
+    referral_code = relationship("ReferralCodeModel", foreign_keys=referral_code_id)
 
 
-class AccessTokenModel(db):
-    __tablename__ = "access_token"
+class ReferralCodeModel(db):
+    __tablename__ = "referral_codes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     token: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     expiration_date: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user = relationship("UserModel", foreign_keys=user_id)
+
+
+class ReferralModel(db):
+    __tablename__ = "referrals"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(String(120), unique=True)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)
+    referral_code_id: Mapped[int] = mapped_column(ForeignKey("referral_codes.id", ondelete="CASCADE"))
+    referrer_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

@@ -16,7 +16,7 @@ class AuthRequiredMixin:
         user_email = user_data.get("email")
         if not user_email:
             raise HTTPForbidden
-        user = await self.store.users.get_by_email(user_email)
+        user = await self.store.users.get_user_by_email(user_email)
         if not user:
             raise HTTPForbidden
         self.request.user = user

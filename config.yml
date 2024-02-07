@@ -3,6 +3,10 @@ session:
 user:
   email: user@user.com
   password: user
+referral:
+  email: referral@referral.com
+  password: referral
+  referral_code: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAdXNlci5jb20ifQ.id6WIZlV95l1YGCQfPNokri72-bselFfs62t66EnCmc
 database:
   host: 0.0.0.0
   port: 5432

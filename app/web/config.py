@@ -19,6 +19,13 @@ class UserConfig:
 
 
 @dataclass
+class ReferralConfig:
+    email: str
+    password: str
+    referral_code: str
+
+
+@dataclass
 class DatabaseConfig:
     host: str = "0.0.0.0"
     port: int = 5432
@@ -30,6 +37,7 @@ class DatabaseConfig:
 @dataclass
 class Config:
     user: UserConfig
+    referral: ReferralConfig
     session: SessionConfig = None
     database: DatabaseConfig = None
 
@@ -45,6 +53,11 @@ def setup_config(app: "Application", config_path: str):
         user=UserConfig(
             email=raw_config["user"]["email"],
             password=raw_config["user"]["password"],
+        ),
+        referral=ReferralConfig(
+            email=raw_config["referral"]["email"],
+            password=raw_config["referral"]["password"],
+            referral_code=raw_config["referral"]["referral_code"]
         ),
         database=DatabaseConfig(**raw_config["database"]),
     )
